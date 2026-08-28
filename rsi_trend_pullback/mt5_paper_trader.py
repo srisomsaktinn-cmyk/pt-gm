@@ -1,17 +1,16 @@
 """
 Production-Ready Automated MetaTrader 5 Paper / Demo Trading Bot for Strategy V2.6 (Frozen Spec).
-Connects to MT5 terminal, polls live H1 candle closes, executes market orders,
-and records the complete 33-column Shadow Audit Log line-by-line.
-
-Usage:
-  python mt5_paper_trader.py
+Fixed Implementation:
+1. Warm-up cleans and primes indicator buffers (RSI, ER, ATR) WITHOUT polluting live session state.
+2. Startup state recovery: If no position in MT5, starts cleanly in IDLE; if existing position, recovers TRADED state.
+3. Timestamp-verified H1 Bar Mapping: Explicitly identifies closed bar T vs forming bar T+1.
 """
 
 import time
 import os
 import sys
 from datetime import datetime, timedelta
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Tuple
 
 # Ensure project package is in path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -36,8 +35,8 @@ from rsi_trend_pullback.paper_trading.reporter import PeriodicBatchReporter
 # ═════════════════════════════════════════════════════════════════════════════
 SYMBOL = "XAUUSD"
 TIMEFRAME_STRING = "H1"
-UNITS_PER_TRADE = 50.0  # 50 oz = 0.50 standard lot on Gold
-LOT_SIZE = 0.50         # MT5 order volume
+UNITS_PER_TRADE = 1.0   # 1 oz = 0.01 standard lot on Gold (Micro lot)
+LOT_SIZE = 0.01         # MT5 order volume (Safe for $1,000 account)
 
 # Strategy V2.6 Frozen Parameters
 RSI_PERIOD = 14
@@ -120,16 +119,25 @@ class MT5PaperTradingLiveRunner:
             return False
 
     def warm_up_history(self, num_bars: int = 200) -> bool:
-        """Pulls historical H1 bars from MT5 to warm up Wilder RSI, Kaufman ER, and Wilder ATR."""
+        """
+        Warms up indicator buffers (RSI, ER, ATR, and price history) from historical candles.
+        CRITICAL FIX (Issue 1): Does NOT evaluate historical trade state transitions.
+        State machine is initialized deterministically based on actual MT5 position status.
+        """
         try:
             import MetaTrader5 as mt5
+            # Fetch completed historical bars (offset 1 skips the currently forming bar 0)
             rates = mt5.copy_rates_from_pos(SYMBOL, mt5.TIMEFRAME_H1, 1, num_bars)
             if rates is None or len(rates) == 0:
                 print("[MT5 ERROR] Failed to fetch historical warm-up rates.")
                 return False
 
-            print(f"[WARM-UP] Warming up indicators with {len(rates)} historical H1 candles...")
-            for idx, r in enumerate(rates):
+            print(f"[WARM-UP] Warming up indicator buffers with {len(rates)} historical completed H1 candles...")
+            
+            # Sort chronologically by time (oldest to newest)
+            rates_sorted = sorted(rates, key=lambda x: x['time'])
+
+            for r in rates_sorted:
                 c_time = datetime.fromtimestamp(r['time'])
                 candle = Candle(
                     timestamp=c_time,
@@ -140,32 +148,38 @@ class MT5PaperTradingLiveRunner:
                     volume=float(r['tick_volume'])
                 )
                 self._price_history.append(candle.close)
-                rsi_val = self.indicator_rsi.update(candle.close)
-                er_val = self.indicator_er.update(candle.close)
-                atr_val = self.indicator_atr.update(candle)
-
-                self._latest_rsi = rsi_val
-                self._latest_er = er_val
-                self._latest_atr = atr_val
-
-                # Evaluate state machine without executing old orders
-                close_change_14 = None
-                if len(self._price_history) > ER_PERIOD:
-                    close_change_14 = candle.close - self._price_history[-1 - ER_PERIOD]
-
-                is_vol_sufficient = (atr_val / ESTIMATED_ROUNDTURN_FRICTION) >= MIN_ATR_COST_RATIO if (atr_val and ESTIMATED_ROUNDTURN_FRICTION > 0) else False
-                effective_er = er_val if is_vol_sufficient else 0.0
-
-                self.state_machine.evaluate_bar(
-                    bar_index=idx,
-                    timestamp=c_time,
-                    current_rsi=rsi_val,
-                    current_er=effective_er,
-                    close_change_14=close_change_14
-                )
+                self._latest_rsi = self.indicator_rsi.update(candle.close)
+                self._latest_er = self.indicator_er.update(candle.close)
+                self._latest_atr = self.indicator_atr.update(candle)
                 self._last_processed_candle_time = c_time
 
-            print(f"[WARM-UP COMPLETE] State={self.state_machine.current_state.value}, RSI={self._latest_rsi:.2f}, ER={self._latest_er:.4f}, ATR=${self._latest_atr:.2f}")
+            # ── Deterministic Startup State Initialization ──
+            self.state_machine.reset()
+            
+            # Check if there is an existing live position in MT5 for this symbol/magic
+            existing_pos = mt5.positions_get(symbol=SYMBOL)
+            active_v26_pos = [p for p in (existing_pos or []) if p.magic == MAGIC_NUMBER]
+
+            if active_v26_pos:
+                pos = active_v26_pos[0]
+                self._active_ticket = pos.ticket
+                self._active_direction = "LONG" if pos.type == mt5.ORDER_TYPE_BUY else "SHORT"
+                # Recover state safely as TRADED
+                if self._active_direction == "LONG":
+                    self.state_machine._state = StrategyState.BULLISH_TRADED
+                else:
+                    self.state_machine._state = StrategyState.BEARISH_TRADED
+                
+                print(f"[STATE RECOVERY] Found active MT5 position #{pos.ticket} ({self._active_direction}). Initialized State={self.state_machine.current_state.value}")
+            else:
+                # No active position -> Clean session start in IDLE
+                self.state_machine._state = StrategyState.IDLE
+                self._active_ticket = None
+                self._active_direction = None
+                self._active_record = None
+                print(f"[CLEAN STARTUP] No existing MT5 position found. Initialized State={self.state_machine.current_state.value} (IDLE)")
+
+            print(f"[WARM-UP COMPLETE] Indicators Ready: RSI={self._latest_rsi:.2f}, ER={self._latest_er:.4f}, ATR=${self._latest_atr:.2f}")
             return True
         except Exception as e:
             print(f"[WARM-UP EXCEPTION] {e}")
@@ -178,10 +192,8 @@ class MT5PaperTradingLiveRunner:
 
         try:
             import MetaTrader5 as mt5
-            # Check open positions
             positions = mt5.positions_get(ticket=self._active_ticket)
             if positions is not None and len(positions) == 0:
-                # Position is no longer open -> Closed by SL or TakeProfit
                 deals = mt5.history_deals_get(position=self._active_ticket)
                 exit_price = self._active_record.hard_stop_price
                 exit_time = datetime.now()
@@ -217,13 +229,13 @@ class MT5PaperTradingLiveRunner:
 
     def on_new_candle_close(self, closed_candle: Candle, current_open_candle: Candle) -> None:
         """
-        Executes exactly when a new H1 candle forms:
-        1. Executes pending Thesis Exit / Entry order at Open(T+1).
-        2. Calculates indicators for Closed Candle(T) and evaluates state machine.
+        Executes strictly at H1 candle boundary:
+        1. Executes pending order at current_open_candle.open [Open(T+1)].
+        2. Calculates indicators for closed_candle.close [Close(T)] and evaluates state machine.
         """
         import MetaTrader5 as mt5
 
-        # ── 1. EXECUTE PENDING ORDER AT BAR OPEN ──
+        # ── 1. EXECUTE PENDING ORDER AT NEW BAR OPEN(T+1) ──
         if self._pending_signal is not None:
             sig = self._pending_signal
             self._pending_signal = None
@@ -343,7 +355,7 @@ class MT5PaperTradingLiveRunner:
                     self._active_direction = direction
                     self._active_ticket = ticket
 
-        # ── 2. BAR CLOSE CALCULATIONS (CLOSED CANDLE T) ──
+        # ── 2. BAR CLOSE CALCULATIONS (ON CLOSED CANDLE T ONLY) ──
         self._price_history.append(closed_candle.close)
         rsi_val = self.indicator_rsi.update(closed_candle.close)
         er_val = self.indicator_er.update(closed_candle.close)
@@ -385,7 +397,10 @@ class MT5PaperTradingLiveRunner:
             print(f"\n{PeriodicBatchReporter.generate_10_trade_summary(self._completed_records, batch_num)}")
 
     def run_live_loop(self) -> None:
-        """Main polling loop listening for H1 candle closes and checking intrabar SL."""
+        """
+        Main polling loop listening for H1 candle closes and checking intrabar SL.
+        CRITICAL FIX (Issue 2): Explicitly identifies closed bar T vs forming bar T+1 using timestamps.
+        """
         import MetaTrader5 as mt5
 
         print(f"\n[ACTIVE] Polling {SYMBOL} {TIMEFRAME_STRING} live feed. Strategy V2.6 is running in Frozen Mode...")
@@ -396,31 +411,40 @@ class MT5PaperTradingLiveRunner:
                 # 1. Check Intrabar SL touch
                 self.check_intrabar_status()
 
-                # 2. Check if new H1 bar has closed
+                # 2. Fetch the 2 most recent H1 bars from MT5
                 rates = mt5.copy_rates_from_pos(SYMBOL, mt5.TIMEFRAME_H1, 0, 2)
                 if rates is not None and len(rates) >= 2:
-                    current_bar_time = datetime.fromtimestamp(rates[1]['time'])
-                    closed_bar_time = datetime.fromtimestamp(rates[0]['time'])
+                    # Sort explicitly by timestamp to guarantee:
+                    # rates_sorted[0] = Older Completed Bar T
+                    # rates_sorted[1] = Newer Currently Forming Bar T+1
+                    rates_sorted = sorted(rates, key=lambda x: x['time'])
 
+                    closed_rate = rates_sorted[0]   # COMPLETED BAR T
+                    forming_rate = rates_sorted[1]  # CURRENT FORMING BAR T+1
+
+                    closed_bar_time = datetime.fromtimestamp(closed_rate['time'])
+                    forming_bar_time = datetime.fromtimestamp(forming_rate['time'])
+
+                    # If a new completed candle has closed that we haven't processed yet
                     if self._last_processed_candle_time is None or closed_bar_time > self._last_processed_candle_time:
                         closed_c = Candle(
                             timestamp=closed_bar_time,
-                            open=float(rates[0]['open']),
-                            high=float(rates[0]['high']),
-                            low=float(rates[0]['low']),
-                            close=float(rates[0]['close']),
-                            volume=float(rates[0]['tick_volume'])
+                            open=float(closed_rate['open']),
+                            high=float(closed_rate['high']),
+                            low=float(closed_rate['low']),
+                            close=float(closed_rate['close']),
+                            volume=float(closed_rate['tick_volume'])
                         )
-                        open_c = Candle(
-                            timestamp=current_bar_time,
-                            open=float(rates[1]['open']),
-                            high=float(rates[1]['high']),
-                            low=float(rates[1]['low']),
-                            close=float(rates[1]['close']),
-                            volume=float(rates[1]['tick_volume'])
+                        current_open_c = Candle(
+                            timestamp=forming_bar_time,
+                            open=float(forming_rate['open']),
+                            high=float(forming_rate['high']),
+                            low=float(forming_rate['low']),
+                            close=float(forming_rate['close']),
+                            volume=float(forming_rate['tick_volume'])
                         )
-                        print(f"\n--- [H1 CANDLE CLOSED: {closed_bar_time}] Close=${closed_c.close:.2f} | New Bar Open=${open_c.open:.2f} ---")
-                        self.on_new_candle_close(closed_c, open_c)
+                        print(f"\n--- [H1 CANDLE CLOSED: {closed_bar_time}] Close(T)=${closed_c.close:.2f} | Next Bar Open(T+1)=${current_open_c.open:.2f} (Time: {forming_bar_time}) ---")
+                        self.on_new_candle_close(closed_c, current_open_c)
                         self._last_processed_candle_time = closed_bar_time
 
                 # Sleep 2 seconds before next tick poll

@@ -1,0 +1,194 @@
+{
+    "engine": "Strategy V2.7 Research & Forward Analytics Center",
+    "timestamp": "2026-08-28T15:21:17.436445",
+    "historical_baseline": {
+        "total_trades": 11,
+        "wins": 2,
+        "losses": 9,
+        "win_rate_pct": 18.18,
+        "profit_factor": 0.3,
+        "payoff_ratio": 1.37,
+        "expectancy_thb": -1523.5,
+        "net_pnl_thb": -16758.53,
+        "gross_profit_thb": 7304.36,
+        "gross_loss_thb": 24062.89,
+        "max_drawdown_pct": 192.44,
+        "max_consecutive_losses": 7,
+        "win_rate_ci_95": [
+            5.1,
+            47.7
+        ],
+        "expectancy_ci_95": [
+            -3474.19,
+            427.18
+        ]
+    },
+    "live_forward": {
+        "total_trades": 0,
+        "wins": 0,
+        "losses": 0,
+        "win_rate_pct": 0.0,
+        "profit_factor": 0.0,
+        "payoff_ratio": 0.0,
+        "expectancy_thb": 0.0,
+        "net_pnl_thb": 0.0,
+        "gross_profit_thb": 0.0,
+        "gross_loss_thb": 0.0,
+        "max_drawdown_pct": 0.0,
+        "max_consecutive_losses": 0,
+        "win_rate_ci_95": [
+            0.0,
+            0.0
+        ],
+        "expectancy_ci_95": [
+            0.0,
+            0.0
+        ]
+    },
+    "pyramid_forensics": {
+        "total_pyramid_events": 3,
+        "successful_runners": 1,
+        "be_reversals": 2,
+        "runner_conversion_rate_pct": 33.33,
+        "base_pnl_thb": -14052.23,
+        "pyramid_pnl_thb": -2706.3,
+        "base_share_pct": 0.0,
+        "pyramid_share_pct": 0.0
+    },
+    "asset_analysis": {
+        "US500": {
+            "symbol": "US500",
+            "trades": 1,
+            "win_rate_pct": 0.0,
+            "profit_factor": 0.0,
+            "net_pnl_thb": -696.83,
+            "expectancy_thb": -696.83,
+            "max_drawdown_pct": 6.97
+        },
+        "USDJPY": {
+            "symbol": "USDJPY",
+            "trades": 0,
+            "win_rate_pct": 0.0,
+            "profit_factor": 0.0,
+            "net_pnl_thb": 0.0,
+            "expectancy_thb": 0.0,
+            "max_drawdown_pct": 0.0
+        },
+        "BTCUSD": {
+            "symbol": "BTCUSD",
+            "trades": 3,
+            "win_rate_pct": 66.67,
+            "profit_factor": 36.98,
+            "net_pnl_thb": 7106.83,
+            "expectancy_thb": 2368.94,
+            "max_drawdown_pct": 1.14
+        },
+        "XAUUSD": {
+            "symbol": "XAUUSD",
+            "trades": 7,
+            "win_rate_pct": 0.0,
+            "profit_factor": 0.0,
+            "net_pnl_thb": -23168.53,
+            "expectancy_thb": -3309.79,
+            "max_drawdown_pct": 231.69
+        },
+        "GBPUSD": {
+            "symbol": "GBPUSD",
+            "trades": 0,
+            "win_rate_pct": 0.0,
+            "profit_factor": 0.0,
+            "net_pnl_thb": 0.0,
+            "expectancy_thb": 0.0,
+            "max_drawdown_pct": 0.0
+        }
+    },
+    "trade_drought": {
+        "avg_days_between_trades": 181.88,
+        "median_days_between_trades": 146.92,
+        "max_gap_days": 757.12
+    },
+    "mae_mfe": {
+        "winning_trades_mae_pct": {
+            "p25": 0.334,
+            "p50": 0.495,
+            "p75": 0.495,
+            "p90": 0.495
+        },
+        "winning_trades_mfe_pct": {
+            "p25": 2.138,
+            "p50": 3.418,
+            "p75": 3.418,
+            "p90": 3.418
+        },
+        "losing_trades_mae_pct": {
+            "p25": 0.074,
+            "p50": 0.432,
+            "p75": 0.644,
+            "p90": 1.022
+        },
+        "losing_trades_mfe_pct": {
+            "p25": 0.191,
+            "p50": 0.208,
+            "p75": 0.289,
+            "p90": 0.307
+        }
+    },
+    "day_of_week": {
+        "Monday": {
+            "day_index": 0,
+            "trades": 4,
+            "win_rate_pct": 0.0,
+            "profit_factor": 0.0,
+            "net_pnl_thb": -9638.02,
+            "expectancy_thb": -2409.51
+        },
+        "Tuesday": {
+            "day_index": 1,
+            "trades": 2,
+            "win_rate_pct": 0.0,
+            "profit_factor": 0.0,
+            "net_pnl_thb": -7430.53,
+            "expectancy_thb": -3715.27
+        },
+        "Wednesday": {
+            "day_index": 2,
+            "trades": 1,
+            "win_rate_pct": 0.0,
+            "profit_factor": 0.0,
+            "net_pnl_thb": -2175.31,
+            "expectancy_thb": -2175.31
+        },
+        "Thursday": {
+            "day_index": 3,
+            "trades": 1,
+            "win_rate_pct": 100.0,
+            "profit_factor": 999.0,
+            "net_pnl_thb": 5303.35,
+            "expectancy_thb": 5303.35
+        },
+        "Friday": {
+            "day_index": 4,
+            "trades": 2,
+            "win_rate_pct": 50.0,
+            "profit_factor": 0.43,
+            "net_pnl_thb": -2620.49,
+            "expectancy_thb": -1310.24
+        },
+        "Saturday": {
+            "day_index": 5,
+            "trades": 0,
+            "win_rate_pct": 0.0,
+            "profit_factor": 0.0,
+            "net_pnl_thb": 0.0,
+            "expectancy_thb": 0.0
+        },
+        "Sunday": {
+            "day_index": 6,
+            "trades": 1,
+            "win_rate_pct": 0.0,
+            "profit_factor": 0.0,
+            "net_pnl_thb": -197.53,
+            "expectancy_thb": -197.53
+        }
+    }
+}

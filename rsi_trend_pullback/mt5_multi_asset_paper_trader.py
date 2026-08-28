@@ -1,13 +1,14 @@
 """
 Production-Ready Multi-Asset Automated MetaTrader 5 Paper / Demo Trading Bot for Strategy V2.6 (Frozen Spec).
 Features Auto-Compounding Dynamic Position Sizing (3.0% Balanced Risk per Trade).
+Auto-resolves broker symbol aliases (BTC / BTCUSD, US500 / SPX500 / US500Cash, XAUUSD / GOLD).
 
 Monitors and trades the Top 5 Qualified Trending Assets simultaneously on H1:
 1. XAUUSD (Spot Gold)
 2. USDJPY (US Dollar / Japanese Yen)
 3. GBPUSD (British Pound / US Dollar)
 4. US500  (S&P 500 Equity Index CFD)
-5. BTCUSD (Bitcoin / US Dollar)
+5. BTCUSD / BTC (Bitcoin / US Dollar)
 
 Usage:
   python mt5_multi_asset_paper_trader.py
@@ -45,11 +46,11 @@ TIMEFRAME_STRING = "H1"
 BALANCED_RISK_PER_TRADE = 0.03  # 3.0% Balanced Risk per Trade with Auto-Compounding
 
 PORTFOLIO_ASSETS = {
-    "XAUUSD": {"default_lot": 0.01, "units": 1.0,     "friction_ref": 0.46,   "digits": 2, "magic": 20260801},
-    "USDJPY": {"default_lot": 0.01, "units": 1000.0,  "friction_ref": 0.018,  "digits": 3, "magic": 20260802},
-    "GBPUSD": {"default_lot": 0.01, "units": 1000.0,  "friction_ref": 0.00020,"digits": 5, "magic": 20260803},
-    "US500":  {"default_lot": 0.10, "units": 0.10,    "friction_ref": 0.80,   "digits": 2, "magic": 20260804},
-    "BTCUSD": {"default_lot": 0.01, "units": 0.01,    "friction_ref": 35.0,   "digits": 2, "magic": 20260805},
+    "XAUUSD": {"aliases": ["XAUUSD", "GOLD", "GOLD#", "XAUUSDm"], "default_lot": 0.01, "units": 1.0,     "friction_ref": 0.46,   "digits": 2, "magic": 20260801},
+    "USDJPY": {"aliases": ["USDJPY", "USDJPY#", "USDJPYm"],        "default_lot": 0.01, "units": 1000.0,  "friction_ref": 0.018,  "digits": 3, "magic": 20260802},
+    "GBPUSD": {"aliases": ["GBPUSD", "GBPUSD#", "GBPUSDm"],        "default_lot": 0.01, "units": 1000.0,  "friction_ref": 0.00020,"digits": 5, "magic": 20260803},
+    "US500":  {"aliases": ["US500Cash#", "US500#", "US500Cash", "US500", "SPX500#", "SPX500", "US500.cash", "SP500", "US500Index"], "default_lot": 0.10, "units": 0.10, "friction_ref": 0.80, "digits": 2, "magic": 20260804},
+    "BTCUSD": {"aliases": ["BTC", "BTCUSD", "BTCUSD#", "BTCUSDm", "BITCOIN"], "default_lot": 0.01, "units": 0.01, "friction_ref": 35.0, "digits": 2, "magic": 20260805},
 }
 
 # Strategy V2.6 Frozen Parameters
@@ -69,8 +70,9 @@ MT5_PASSWORD = ""
 
 
 class SingleAssetContext:
-    def __init__(self, symbol: str, config: Dict[str, Any]):
+    def __init__(self, symbol: str, actual_symbol: str, config: Dict[str, Any]):
         self.symbol = symbol
+        self.actual_symbol = actual_symbol
         self.config = config
         self.default_lot = config["default_lot"]
         self.units = config["units"]
@@ -106,17 +108,11 @@ class MT5MultiAssetPaperTrader:
     def __init__(self, output_csv_path: str = "d:/Kaeha/rsi_trend_pullback/output_paper_trading/multi_asset_v26_shadow_audit_log.csv"):
         self.output_csv_path = output_csv_path
         os.makedirs(os.path.dirname(os.path.abspath(output_csv_path)), exist_ok=True)
-
-        self.contexts: Dict[str, SingleAssetContext] = {
-            sym: SingleAssetContext(sym, cfg) for sym, cfg in PORTFOLIO_ASSETS.items()
-        }
+        self.contexts: Dict[str, SingleAssetContext] = {}
         self._trade_counter: int = 0
         self._completed_records: List[ShadowAuditRecord] = []
 
     def calculate_dynamic_lot_size(self, sym: str, sl_distance: float) -> float:
-        """
-        Calculates dynamic lot size ensuring risk equals strictly 3.0% of account equity.
-        """
         import MetaTrader5 as mt5
         acc = mt5.account_info()
         equity = acc.equity if acc else 1000.0
@@ -164,8 +160,23 @@ class MT5MultiAssetPaperTrader:
                 print(f"  * Balance    : ${account_info.balance:,.2f} {account_info.currency} (Equity: ${account_info.equity:,.2f})")
                 print(f"  * Leverage   : 1:{account_info.leverage}")
                 print(f"  * Sizing Mode: Balanced Dynamic Risk (3.0% Auto-Compounding)")
-                print(f"  * Portfolio  : {list(PORTFOLIO_ASSETS.keys())} (5 Assets)")
             print("=" * 80)
+
+            # Resolve broker aliases
+            for canonical_name, cfg in PORTFOLIO_ASSETS.items():
+                resolved = None
+                for alias in cfg["aliases"]:
+                    info = mt5.symbol_info(alias)
+                    if info is not None:
+                        mt5.symbol_select(alias, True)
+                        resolved = alias
+                        break
+                if resolved:
+                    self.contexts[resolved] = SingleAssetContext(canonical_name, resolved, cfg)
+                    print(f"  * Mapped [{canonical_name}] -> MT5 Broker Symbol: '{resolved}'")
+                else:
+                    print(f"  * Warning: Could not find broker symbol for [{canonical_name}] (Aliases: {cfg['aliases']})")
+
             return True
         except ImportError:
             print("[WARNING] 'MetaTrader5' Python library not installed.")
@@ -174,12 +185,12 @@ class MT5MultiAssetPaperTrader:
     def warm_up_all_assets(self, num_bars: int = 150) -> bool:
         import MetaTrader5 as mt5
 
-        print("\n[WARM-UP] Priming indicator buffers for all 5 portfolio assets...")
+        print("\n[WARM-UP] Priming indicator buffers for all mapped portfolio assets...")
         for sym, ctx in self.contexts.items():
             mt5.symbol_select(sym, True)
             rates = mt5.copy_rates_from_pos(sym, mt5.TIMEFRAME_H1, 1, num_bars)
             if rates is None or len(rates) == 0:
-                print(f"  * [{sym}] Warning: Could not pull rates. Check symbol in MT5 MarketWatch.")
+                print(f"  * [{sym}] Warning: Could not pull rates.")
                 continue
 
             rates_sorted = sorted(rates, key=lambda x: x['time'])
@@ -257,13 +268,11 @@ class MT5MultiAssetPaperTrader:
         import MetaTrader5 as mt5
         ctx = self.contexts[sym]
 
-        # ── 1. EXECUTE PENDING ORDER AT NEW BAR OPEN(T+1) ──
         if ctx.pending_signal is not None:
             sig = ctx.pending_signal
             ctx.pending_signal = None
             theo_open = current_open_candle.open
 
-            # Thesis Exit
             if sig.signal_type in (SignalType.LONG_EXIT_SIGNAL, SignalType.SHORT_EXIT_SIGNAL):
                 if ctx.active_ticket is not None:
                     print(f"[THESIS EXIT] Closing {sym} position #{ctx.active_ticket} ({sig.reason})...")
@@ -308,7 +317,6 @@ class MT5MultiAssetPaperTrader:
                     ctx.active_direction = None
                     ctx.active_ticket = None
 
-            # New Entry with Auto-Compounding Dynamic Lot Sizing
             elif sig.signal_type in (SignalType.LONG_ENTRY_SIGNAL, SignalType.SHORT_ENTRY_SIGNAL):
                 if ctx.active_record is None:
                     self._trade_counter += 1
@@ -322,7 +330,6 @@ class MT5MultiAssetPaperTrader:
                     sl_dist = ATR_MULTIPLIER * atr_val
                     hard_sl = round(req_price - sl_dist if direction == "LONG" else req_price + sl_dist, ctx.digits)
 
-                    # Dynamic Lot Sizing (3.0% Risk of Equity)
                     dynamic_lot = self.calculate_dynamic_lot_size(sym, sl_dist)
 
                     req = {
@@ -379,7 +386,6 @@ class MT5MultiAssetPaperTrader:
                     ctx.active_ticket = ticket
                     ctx.active_lot_size = dynamic_lot
 
-        # ── 2. BAR CLOSE CALCULATIONS (ON CLOSED CANDLE T) ──
         ctx.price_history.append(closed_candle.close)
         rsi_val = ctx.indicator_rsi.update(closed_candle.close)
         er_val = ctx.indicator_er.update(closed_candle.close)
@@ -413,7 +419,6 @@ class MT5MultiAssetPaperTrader:
                 if ctx.active_record is None:
                     ctx.pending_signal = signal
 
-        # ── Periodic 10-Trade Report Check ──
         completed_count = len(self._completed_records)
         if completed_count > 0 and completed_count % 10 == 0:
             batch_num = completed_count // 10
@@ -423,7 +428,7 @@ class MT5MultiAssetPaperTrader:
         import MetaTrader5 as mt5
 
         print("=" * 80)
-        print(f"[ACTIVE] Multi-Asset Portfolio Bot (Auto-Risk 3.0% Balanced) is POLLING 5 Assets on H1...")
+        print(f"[ACTIVE] Multi-Asset Portfolio Bot (Auto-Risk 3.0% Balanced) is POLLING {len(self.contexts)} Assets on H1...")
         print(f"[AUDIT LOG] Output destination: {self.output_csv_path}")
         print("=" * 80)
 

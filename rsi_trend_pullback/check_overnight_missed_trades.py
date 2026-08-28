@@ -1,19 +1,13 @@
 """
 Overnight Missed Trade Checker for Strategy V2.6 (Live MT5 Multi-Asset).
-Scans the last 24-48 hours across all 5 assets:
-XAUUSD, USDJPY, GBPUSD, US500, BTCUSD.
-Detects if any Strategy V2.6 signals occurred during your Offline hours (16:00 to 09:00 Bangkok time),
-and shows the theoretical entry price and current trade status.
-
-Usage:
-  python check_overnight_missed_trades.py
-  (or double-click check_missed_trades.bat)
+Auto-resolves broker symbol aliases (BTC / BTCUSD, US500 / SPX500 / US500Cash, XAUUSD / GOLD).
+Scans the last 24-48 hours across all 5 assets.
 """
 
 import os
 import sys
 from datetime import datetime, timedelta
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 
 # Ensure project package is in path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -27,11 +21,11 @@ from rsi_trend_pullback.state_machine.engine_v2 import RSIStateMachineV2
 
 
 PORTFOLIO_ASSETS = {
-    "XAUUSD": {"friction_ref": 0.46,   "digits": 2},
-    "USDJPY": {"friction_ref": 0.018,  "digits": 3},
-    "GBPUSD": {"friction_ref": 0.00020,"digits": 5},
-    "US500":  {"friction_ref": 0.80,   "digits": 2},
-    "BTCUSD": {"friction_ref": 35.0,   "digits": 2},
+    "XAUUSD": {"aliases": ["XAUUSD", "GOLD", "GOLD#", "XAUUSDm"], "friction_ref": 0.46,   "digits": 2},
+    "USDJPY": {"aliases": ["USDJPY", "USDJPY#", "USDJPYm"],        "friction_ref": 0.018,  "digits": 3},
+    "GBPUSD": {"aliases": ["GBPUSD", "GBPUSD#", "GBPUSDm"],        "friction_ref": 0.00020,"digits": 5},
+    "US500":  {"aliases": ["US500Cash#", "US500#", "US500Cash", "US500", "SPX500#", "SPX500", "US500.cash", "SP500", "US500Index"], "friction_ref": 0.80, "digits": 2},
+    "BTCUSD": {"aliases": ["BTC", "BTCUSD", "BTCUSD#", "BTCUSDm", "BITCOIN"], "friction_ref": 35.0, "digits": 2},
 }
 
 RSI_PERIOD = 14
@@ -43,6 +37,16 @@ LOWER_LEVEL = 40.0
 ER_THRESHOLD = 0.40
 ATR_MULTIPLIER = 2.5
 MIN_ATR_COST_RATIO = 5.0
+
+
+def resolve_symbol(aliases: List[str]) -> Optional[str]:
+    import MetaTrader5 as mt5
+    for a in aliases:
+        info = mt5.symbol_info(a)
+        if info is not None:
+            mt5.symbol_select(a, True)
+            return a
+    return None
 
 
 def check_overnight_missed_signals():
@@ -63,11 +67,15 @@ def check_overnight_missed_signals():
     total_missed_count = 0
     now_bangkok = datetime.now()
 
-    for sym, spec in PORTFOLIO_ASSETS.items():
-        mt5.symbol_select(sym, True)
-        rates = mt5.copy_rates_from_pos(sym, mt5.TIMEFRAME_H1, 0, 60)
+    for asset_name, spec in PORTFOLIO_ASSETS.items():
+        actual_sym = resolve_symbol(spec["aliases"])
+        if actual_sym is None:
+            print(f"  * [{asset_name}] Warning: Symbol aliases {spec['aliases']} not found in broker MarketWatch.")
+            continue
+
+        rates = mt5.copy_rates_from_pos(actual_sym, mt5.TIMEFRAME_H1, 0, 60)
         if rates is None or len(rates) < 20:
-            print(f"  * [{sym}] Warning: Could not pull rates.")
+            print(f"  * [{actual_sym}] Warning: Could not pull rates.")
             continue
 
         rates_sorted = sorted(rates, key=lambda x: x['time'])
@@ -104,13 +112,10 @@ def check_overnight_missed_signals():
 
             sig = sm.evaluate_bar(bar_index=idx, timestamp=c_time_utc, current_rsi=r_val, current_er=eff_er, close_change_14=chg14)
 
-            # Check if this bar generated an Entry Signal in the last 24 hours
             if sig and sig.signal_type in (SignalType.LONG_ENTRY_SIGNAL, SignalType.SHORT_ENTRY_SIGNAL):
-                # Theoretical execution at Open(T+1)
                 exec_time_utc = c_time_utc + timedelta(hours=1)
-                exec_time_bkk = exec_time_utc + timedelta(hours=7) # Assuming MT5 broker time shift to Bangkok
+                exec_time_bkk = exec_time_utc + timedelta(hours=7)
 
-                # Check if signal was in last 24 hours
                 if (now_bangkok - exec_time_bkk).total_seconds() <= 86400:
                     hour_bkk = exec_time_bkk.hour
                     is_offline = not ((9 <= hour_bkk < 16) or (17 <= hour_bkk < 22))
@@ -119,13 +124,12 @@ def check_overnight_missed_signals():
                     direction = "LONG" if sig.signal_type == SignalType.LONG_ENTRY_SIGNAL else "SHORT"
                     hard_sl = theo_entry - (ATR_MULTIPLIER * a_val) if direction == "LONG" else theo_entry + (ATR_MULTIPLIER * a_val)
 
-                    # Current market price to evaluate theoretical floating status
                     curr_price = rates_sorted[-1]['close']
                     pnl_diff = (curr_price - theo_entry) if direction == "LONG" else (theo_entry - curr_price)
                     is_profit = pnl_diff > 0
 
                     asset_signals.append({
-                        "symbol": sym,
+                        "symbol": actual_sym,
                         "time_bkk": exec_time_bkk,
                         "direction": direction,
                         "is_offline": is_offline,

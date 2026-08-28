@@ -1,8 +1,8 @@
 # ==============================================================================
-# Git Ignore for Quantitative Trading Project (Strategy V2.6)
+# Git Ignore for Kaeha Workspace Architecture
 # ==============================================================================
 
-# Python cache & build
+# Python cache & virtual environments
 __pycache__/
 *.py[cod]
 *$py.class
@@ -12,51 +12,8 @@ env/
 venv/
 .venv/
 
-# Ignore Unrelated Web / Node files in workspace
+# Node / Web Build
 node_modules/
-dist/
-src/
-public/
-package.json
-package-lock.json
-vite.config.js
-index.html
-.oxlintrc.json
-
-# Ignore Unrelated Office Documents & Data Dumps
-*.xlsx
-*.docx
-*.txt
-*.xml
-*.md
-!README.md
-!rsi_trend_pullback/**/*.md
-
-# Ignore Non-trading miscellaneous root scripts
-analyze_*.py
-categorize_*.py
-deep_*.py
-direct_report.py
-dump_*.py
-filter_*.py
-find_*.py
-fix_*.py
-generate_*.py
-insert_*.py
-inspect_*.py
-parse_*.py
-perfect_*.py
-populate_*.py
-precise_*.py
-scan_*.py
-search_*.py
-test_align.py
-test_final_extraction.py
-test_ultimate.py
-verify_all.py
-run_quant_engine.py
-
-# Temp & OS files
 .DS_Store
 Thumbs.db
 *.log

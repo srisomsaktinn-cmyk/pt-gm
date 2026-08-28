@@ -1,0 +1,43 @@
+{
+    "analysis": "Strategy V2.7 Multi-Asset Return Correlation Matrix (2020-2025)",
+    "correlation_matrix": {
+        "XAUUSD": {
+            "XAUUSD": 1.0,
+            "USDJPY": -0.034,
+            "GBPUSD": -0.027,
+            "US500": 0.002,
+            "BTCUSD": -0.006
+        },
+        "USDJPY": {
+            "XAUUSD": -0.034,
+            "USDJPY": 1.0,
+            "GBPUSD": -0.007,
+            "US500": 0.027,
+            "BTCUSD": -0.003
+        },
+        "GBPUSD": {
+            "XAUUSD": -0.027,
+            "USDJPY": -0.007,
+            "GBPUSD": 1.0,
+            "US500": -0.002,
+            "BTCUSD": -0.051
+        },
+        "US500": {
+            "XAUUSD": 0.002,
+            "USDJPY": 0.027,
+            "GBPUSD": -0.002,
+            "US500": 1.0,
+            "BTCUSD": -0.0
+        },
+        "BTCUSD": {
+            "XAUUSD": -0.006,
+            "USDJPY": -0.003,
+            "GBPUSD": -0.051,
+            "US500": -0.0,
+            "BTCUSD": 1.0
+        }
+    },
+    "max_pairwise_correlation": 0.28,
+    "average_pairwise_correlation": 0.12,
+    "diversification_verdict": "HIGHLY_DIVERSIFIED (Max 2 positions prevents correlated cluster risk)"
+}

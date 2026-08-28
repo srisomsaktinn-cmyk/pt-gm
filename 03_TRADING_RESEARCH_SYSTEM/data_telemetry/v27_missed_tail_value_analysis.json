@@ -1,0 +1,111 @@
+{
+    "analysis": "Strategy V2.7 Missed Signal Tail-Value Analysis",
+    "timestamp": "2026-08-28T15:21:23.832947",
+    "top_winners_breakdown": {
+        "top_5": {
+            "n": 5,
+            "online_count": 2,
+            "offline_count": 3,
+            "online_capture_pct": 40.0,
+            "offline_miss_pct": 60.0,
+            "online_pnl_thb": 5028.65,
+            "offline_pnl_thb": 5874.9,
+            "total_top_n_pnl_thb": 10903.55,
+            "top_n_pnl_capture_pct": 46.12
+        },
+        "top_10": {
+            "n": 10,
+            "online_count": 5,
+            "offline_count": 5,
+            "online_capture_pct": 50.0,
+            "offline_miss_pct": 50.0,
+            "online_pnl_thb": 9421.74,
+            "offline_pnl_thb": 8533.29,
+            "total_top_n_pnl_thb": 17955.03,
+            "top_n_pnl_capture_pct": 52.47
+        },
+        "top_20": {
+            "n": 20,
+            "online_count": 9,
+            "offline_count": 11,
+            "online_capture_pct": 45.0,
+            "offline_miss_pct": 55.0,
+            "online_pnl_thb": 14155.73,
+            "offline_pnl_thb": 15245.6,
+            "total_top_n_pnl_thb": 29401.33,
+            "top_n_pnl_capture_pct": 48.15
+        },
+        "top_30": {
+            "n": 30,
+            "online_count": 13,
+            "offline_count": 17,
+            "online_capture_pct": 43.33,
+            "offline_miss_pct": 56.67,
+            "online_pnl_thb": 17944.51,
+            "offline_pnl_thb": 20874.05,
+            "total_top_n_pnl_thb": 38818.56,
+            "top_n_pnl_capture_pct": 46.23
+        }
+    },
+    "large_losses_breakdown": {
+        "loss_5": {
+            "n": 5,
+            "online_count": 1,
+            "offline_count": 4,
+            "online_share_pct": 20.0,
+            "offline_share_pct": 80.0,
+            "online_loss_thb": -397.5,
+            "offline_loss_thb": -1591.13,
+            "total_loss_thb": -1988.63
+        },
+        "loss_10": {
+            "n": 10,
+            "online_count": 4,
+            "offline_count": 6,
+            "online_share_pct": 40.0,
+            "offline_share_pct": 60.0,
+            "online_loss_thb": -1516.39,
+            "offline_loss_thb": -2342.38,
+            "total_loss_thb": -3858.77
+        },
+        "loss_20": {
+            "n": 20,
+            "online_count": 13,
+            "offline_count": 7,
+            "online_share_pct": 65.0,
+            "offline_share_pct": 35.0,
+            "online_loss_thb": -4757.78,
+            "offline_loss_thb": -2697.1,
+            "total_loss_thb": -7454.88
+        }
+    },
+    "quality_comparison": {
+        "online": {
+            "count": 913,
+            "mean_pnl_thb": -10.0,
+            "median_pnl_thb": -18.21,
+            "win_rate_pct": 20.48,
+            "payoff_ratio": 3.31,
+            "mean_mfe_pct": 0.786,
+            "median_mfe_pct": 0.291,
+            "mean_mae_pct": 0.702,
+            "median_mae_pct": 0.532
+        },
+        "offline": {
+            "count": 658,
+            "mean_pnl_thb": 0.52,
+            "median_pnl_thb": -18.33,
+            "win_rate_pct": 21.58,
+            "payoff_ratio": 3.66,
+            "mean_mfe_pct": 0.789,
+            "median_mfe_pct": 0.324,
+            "mean_mae_pct": 0.649,
+            "median_mae_pct": 0.485
+        }
+    },
+    "vps_decision_metrics": {
+        "signal_coverage_pct": 63.11,
+        "pnl_opportunity_coverage_pct": 65.08,
+        "top_20_winner_coverage_pct": 45.0
+    }
+}

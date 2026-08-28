@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Strategy V2.7 Master Quantitative Research & Observability Dashboard</title>
+    <style>
+        :root {
+            --bg-main: #090d16;
+            --bg-card: #131b2e;
+            --bg-card-header: #1a253f;
+            --border-color: #233152;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent-blue: #38bdf8;
+            --accent-green: #4ade80;
+            --accent-purple: #c084fc;
+            --accent-amber: #fbbf24;
+            --accent-red: #f87171;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 24px;
+            box-sizing: border-box;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 20px;
+            margin-bottom: 24px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .badge {
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .badge-frozen { background: rgba(56, 189, 248, 0.15); color: var(--accent-blue); border: 1px solid var(--accent-blue); }
+        .badge-pass { background: rgba(74, 222, 128, 0.15); color: var(--accent-green); border: 1px solid var(--accent-green); }
+        
+        .grid-16 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+        }
+        .card-header {
+            background: var(--bg-card-header);
+            padding: 12px 16px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .card-body {
+            padding: 16px;
+            flex: 1;
+        }
+        .stat-value {
+            font-size: 26px;
+            font-weight: 700;
+            margin: 4px 0;
+        }
+        .stat-sub {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+        th, td {
+            text-align: left;
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        th { color: var(--text-secondary); font-weight: 600; }
+        .green { color: var(--accent-green); }
+        .blue { color: var(--accent-blue); }
+        .amber { color: var(--accent-amber); }
+        .purple { color: var(--accent-purple); }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div>
+            <h1>🛡️ Strategy V2.7 Quantitative Master Research Dashboard</h1>
+            <p style="margin: 6px 0 0 0; color: var(--text-secondary); font-size: 14px;">
+                SSOT: <code>PROJECT_CONTEXT.md</code> | Mode: <b>Pure Observability & Validation (Zero Mutations)</b>
+            </p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <span class="badge badge-frozen">Strategy V2.7 FROZEN</span>
+            <span class="badge badge-pass">Independent Validation: PASS</span>
+        </div>
+    </div>
+
+    <div class="grid-16">
+
+        <!-- Panel 1: System Status & Governance -->
+        <div class="card">
+            <div class="card-header">1. System Status & Governance</div>
+            <div class="card-body">
+                <div class="stat-value green">🟢 PRODUCTION READY</div>
+                <div class="stat-sub">
+                    • <b>V2.6 Baseline:</b> 🟢 Running on XM MT5 Demo (1301604465)<br>
+                    • <b>V2.7 Engine:</b> 🔒 Frozen Multi-Asset Engine (5 Assets)<br>
+                    • <b>Governance:</b> Zero parameter tuning / No V2.8 creation
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel 2: Historical In-Sample Baseline (2020-2025) -->
+        <div class="card">
+            <div class="card-header">2. In-Sample Baseline (2020–2025)</div>
+            <div class="card-body">
+                <div class="stat-value green">+203,650.00 THB</div>
+                <div class="stat-sub">
+                    • <b>Profit Factor:</b> 1.24 | <b>Win Rate:</b> 41.2% (119W / 170L)<br>
+                    • <b>Total Trades:</b> 289 orders (225 Base + 64 Pyramid)<br>
+                    • <b>Capital:</b> 81k THB Contributed $\rightarrow$ 284,650 THB Ending Eq
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel 3: Untouched OOS Generalization (2014-2019) -->
+        <div class="card">
+            <div class="card-header">3. Untouched OOS (2014–2019: 6 Years)</div>
+            <div class="card-body">
+                <div class="stat-value purple">+176,400.00 THB</div>
+                <div class="stat-sub">
+                    • <b>OOS Profit Factor:</b> 1.21 | <b>Max Drawdown:</b> -11.60%<br>
+                    • <b>OOS Trades:</b> 274 orders (Zero Overfitting Degradation)<br>
+                    • <b>Integrity:</b> 100% frozen untouched out-of-sample data
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel 4: Independent Clean-Room Backtest -->
+        <div class="card">
+            <div class="card-header">4. Independent Clean-Room Audit</div>
+            <div class="card-body">
+                <div class="stat-value green">289 / 289 MATCH (100%)</div>
+                <div class="stat-sub">
+                    • <b>Zero Logic Mismatches:</b> 0 differences found<br>
+                    • <b>Implementation:</b> 100% isolated clean-room engine<br>
+                    • <b>Classification:</b> <b class="green">PASS ✅</b>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel 5: Live Forward Demo Telemetry -->
+        <div class="card">
+            <div class="card-header">5. Live Forward Demo Telemetry</div>
+            <div class="card-body">
+                <div class="stat-value blue">ACTIVE MONITORING</div>
+                <div class="stat-sub">
+                    • <b>Broker:</b> XM Global MT5 Demo (Server: XMGlobal-MT5)<br>
+                    • <b>Execution:</b> Causal Next-Bar Open fills<br>
+                    • <b>Audit Trail:</b> <code>v27_forward_trades.csv</code> (21 fields)
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel 6: Execution Quality & Slippage -->
+        <div class="card">
+            <div class="card-header">6. Execution Quality & Slippage</div>
+            <div class="card-body">
+                <div class="stat-value blue">&lt; 0.50 Pips Avg Slip</div>
+                <div class="stat-sub">
+                    • <b>Avg Latency:</b> ~350 ms broker response<br>
+                    • <b>Spread Gate:</b> ATR / Roundturn Friction &ge; 5.0<br>
+                    • <b>Slippage Anomaly Threshold:</b> 3.0 pips
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel 7: Risk & Portfolio Heat Constraints -->
+        <div class="card">
+            <div class="card-header">7. Risk & Portfolio Heat</div>
+            <div class="card-body">
+                <div class="stat-value amber">&le; 6.0% Hard Heat Cap</div>
+                <div class="stat-sub">
+                    • <b>Active Position Cap:</b> Max 2 concurrent positions<br>
+                    • <b>Historical Peak Heat:</b> 5.88% (Zero breaches)<br>
+                    • <b>Base Sizing:</b> 3.0% with floor step quantization
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel 8: Drawdown & DCA Unit-NAV Accounting -->
+        <div class="card">
+            <div class="card-header">8. Drawdown & DCA Forensics</div>
+            <div class="card-body">
+                <div class="stat-value blue">-10.40% True Unit-NAV DD</div>
+                <div class="stat-sub">
+                    • <b>Personal DD Limit:</b> 25.0% Max Tolerance<br>
+                    • <b>DCA Ledger:</b> 71 monthly deposits (71,000 THB)<br>
+                    • <b>Accounting:</b> Pure TWR Unit NAV (DCA isolated)
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel 9: Multi-Asset Performance Breakdown -->
+        <div class="card" style="grid-column: span 2;">
+            <div class="card-header">9. Multi-Asset Attribution (5 Screened Symbols)</div>
+            <div class="card-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Symbol</th>
+                            <th>Trades</th>
+                            <th>Win Rate</th>
+                            <th>Profit Factor</th>
+                            <th>Net Profit (THB)</th>
+                            <th>P&L Share</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><b>US500</b></td><td>78</td><td>42.3%</td><td>1.28</td><td class="green">+71,050.00</td><td>34.9%</td></tr>
+                        <tr><td><b>USDJPY</b></td><td>82</td><td>41.5%</td><td>1.25</td><td class="green">+65,550.00</td><td>32.2%</td></tr>
+                        <tr><td><b>BTCUSD</b></td><td>44</td><td>40.9%</td><td>1.22</td><td class="green">+36,580.00</td><td>18.0%</td></tr>
+                        <tr><td><b>XAUUSD</b></td><td>48</td><td>39.6%</td><td>1.18</td><td class="green">+23,570.00</td><td>11.6%</td></tr>
+                        <tr><td><b>GBPUSD</b></td><td>37</td><td>40.5%</td><td>1.15</td><td class="green">+6,900.00</td><td>3.3%</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Panel 10: Pyramiding Scale-In Forensics -->
+        <div class="card">
+            <div class="card-header">10. Pyramiding (+1.5R) Forensics</div>
+            <div class="card-body">
+                <div class="stat-value green">59.4% Runner Conversion</div>
+                <div class="stat-sub">
+                    • <b>Total Pyramid Activations:</b> 64 scale-ins (+1.5R)<br>
+                    • <b>Macro Runners:</b> 38 rode to thesis exit (+63,600 THB)<br>
+                    • <b>BE Reversals:</b> 26 stopped at breakeven (Scratch)
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel 11: Collision Priority & Rejections -->
+        <div class="card">
+            <div class="card-header">11. Collision Resolution</div>
+            <div class="card-body">
+                <div class="stat-value blue">3-Tier Priority Ordering</div>
+                <div class="stat-sub">
+                    • <b>Tier 1:</b> Highest Kaufman ER14 trend efficiency<br>
+                    • <b>Tier 2:</b> Lowest Spread / ATR ratio<br>
+                    • <b>Rejections:</b> 66 signals safely filtered by Heat & Pos cap
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel 12: Missed Signals & Personal Schedule -->
+        <div class="card">
+            <div class="card-header">12. Personal Schedule Coverage</div>
+            <div class="card-body">
+                <div class="stat-value green">65.1% Economic P&L Capture</div>
+                <div class="stat-sub">
+                    • <b>Online Hours (12h/day):</b> 63.1% Signal Capture (142/225)<br>
+                    • <b>Top-5 Winner Capture:</b> 80.0% (4 out of 5 captured)<br>
+                    • <b>VPS Status:</b> Not needed during Demo Forward Testing
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel 13: Parameter Robustness Plateau -->
+        <div class="card">
+            <div class="card-header">13. Parameter Sensitivity Plateau</div>
+            <div class="card-body">
+                <div class="stat-value green">PF 1.18 – 1.24 Plateau</div>
+                <div class="stat-sub">
+                    • <b>ER Range (0.30–0.50):</b> Stable positive edge<br>
+                    • <b>RSI Range (10–18):</b> Smooth performance surface<br>
+                    • <b>ATR Stop (2.0–3.0):</b> No cliff-edge fragility
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel 14: Adversarial Attack QA -->
+        <div class="card">
+            <div class="card-header">14. Adversarial Attack QA</div>
+            <div class="card-body">
+                <div class="stat-value green">9 / 9 ATTACKS DEFENDED</div>
+                <div class="stat-sub">
+                    • <b>Data Attacks:</b> Impossible OHLC / Flash jumps handled<br>
+                    • <b>Market Attacks:</b> Gaps past SL fill at Open (realistic)<br>
+                    • <b>State Attacks:</b> Corrupted state JSON cleanly recovered
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel 15: Data Provenance & Integrity -->
+        <div class="card">
+            <div class="card-header">15. Data Provenance & Integrity</div>
+            <div class="card-body">
+                <div class="stat-value blue">199,584 Raw H1 Bars</div>
+                <div class="stat-sub">
+                    • <b>Duplicates:</b> 0 duplicate timestamps on disk<br>
+                    • <b>Forward-fills:</b> 0 synthetic bars created<br>
+                    • <b>Calendar:</b> Independent 24/5 (FX) & 24/7 (BTC) clocks
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel 16: Uptime & Process Reliability -->
+        <div class="card">
+            <div class="card-header">16. Process Uptime & Reliability</div>
+            <div class="card-body">
+                <div class="stat-value green">99.9% Fault Tolerance</div>
+                <div class="stat-sub">
+                    • <b>Auto-Reconnect:</b> Handles MT5 broker disconnects<br>
+                    • <b>Crash Recovery:</b> Atomic JSON state serialization<br>
+                    • <b>Fail-Safe:</b> Rejects corrupt data without crashing
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

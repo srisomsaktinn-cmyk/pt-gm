@@ -142,6 +142,10 @@ class DataLoader:
             candles.append(candle)
         return cls.validate_dataset(candles)
 
+    @classmethod
+    def load_csv(cls, filepath: str, has_header: bool = True) -> List[Candle]:
+        return cls.load_from_csv(filepath, has_header)
+
     @staticmethod
     def validate_dataset(candles: List[Candle]) -> List[Candle]:
         """

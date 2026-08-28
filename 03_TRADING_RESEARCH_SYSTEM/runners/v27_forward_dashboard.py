@@ -13,6 +13,12 @@ import sys
 import time
 from datetime import datetime
 
+if sys.stdout.encoding != 'utf-8':
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+    except Exception:
+        pass
+
 sys.path.insert(0, "d:/Kaeha")
 
 from rsi_trend_pullback.monitoring.v27_forward_telemetry import (

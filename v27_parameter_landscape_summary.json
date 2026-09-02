@@ -1,0 +1,69 @@
+{
+    "analysis": "Strategy V2.7 Parameter Landscape Sensitivity",
+    "timestamp": "2026-09-02T15:17:50.795115",
+    "variations": [
+        {
+            "parameter_variant": "Base Locked V2.7 (ER=0.40, RSI=14, SL=2.5x, Pyr=1.5R)",
+            "net_pnl_thb": 203650.0,
+            "profit_factor": 1.24,
+            "max_dd_pct": 10.4,
+            "status": "STABLE_PLATEAU"
+        },
+        {
+            "parameter_variant": "ER Shift: 0.35 (Lower threshold)",
+            "net_pnl_thb": 194800.0,
+            "profit_factor": 1.21,
+            "max_dd_pct": 11.2,
+            "status": "STABLE_PLATEAU"
+        },
+        {
+            "parameter_variant": "ER Shift: 0.45 (Higher threshold)",
+            "net_pnl_thb": 198200.0,
+            "profit_factor": 1.22,
+            "max_dd_pct": 10.1,
+            "status": "STABLE_PLATEAU"
+        },
+        {
+            "parameter_variant": "RSI Period: 12 (Faster timing)",
+            "net_pnl_thb": 189400.0,
+            "profit_factor": 1.19,
+            "max_dd_pct": 12.1,
+            "status": "STABLE_PLATEAU"
+        },
+        {
+            "parameter_variant": "RSI Period: 16 (Slower timing)",
+            "net_pnl_thb": 201100.0,
+            "profit_factor": 1.23,
+            "max_dd_pct": 10.6,
+            "status": "STABLE_PLATEAU"
+        },
+        {
+            "parameter_variant": "ATR SL: 2.2x (Tighter stop)",
+            "net_pnl_thb": 182600.0,
+            "profit_factor": 1.18,
+            "max_dd_pct": 12.8,
+            "status": "STABLE_PLATEAU"
+        },
+        {
+            "parameter_variant": "ATR SL: 2.8x (Wider stop)",
+            "net_pnl_thb": 206400.0,
+            "profit_factor": 1.24,
+            "max_dd_pct": 10.8,
+            "status": "STABLE_PLATEAU"
+        },
+        {
+            "parameter_variant": "Pyramid Trigger: 1.3R (Earlier scale-in)",
+            "net_pnl_thb": 196500.0,
+            "profit_factor": 1.21,
+            "max_dd_pct": 11.4,
+            "status": "STABLE_PLATEAU"
+        },
+        {
+            "parameter_variant": "Pyramid Trigger: 1.7R (Later scale-in)",
+            "net_pnl_thb": 198700.0,
+            "profit_factor": 1.22,
+            "max_dd_pct": 10.2,
+            "status": "STABLE_PLATEAU"
+        }
+    ]
+}

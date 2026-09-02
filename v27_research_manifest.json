@@ -1,0 +1,36 @@
+{
+    "system": "Strategy V2.7 Research & Forward Validation Framework",
+    "manifest_version": "1.0.0-PROD",
+    "generated_timestamp": "2026-09-02T15:17:57.377928",
+    "strategy_governance": {
+        "strategy_v26_status": "FROZEN (100% Locked)",
+        "strategy_v27_status": "FROZEN_CANDIDATE (Locked / Under Forward Demo)",
+        "parameter_mutation_allowed": false
+    },
+    "dataset_hashes_sha256": {
+        "XAUUSD_H1": "e591ca9c9ed86117908ee2334427ce35041960ea028e48027b142b19ddba076b",
+        "USDJPY_H1": "f44f2676b7528a0d0a39047a1e0b2ee40352640c794f94818a04006c4648859a",
+        "GBPUSD_H1": "faaf7253385f28ce7e882fcc50cde17a2aa9a792b36bbfe7313a154ae17cf86f",
+        "US500_H1": "d7f518f538333d27d3372652d7f3d334e00620eb65b851d3b77179f237747fdc",
+        "BTCUSD_H1": "d61f1be76094edb133f7a94280bb42dd28c96c5bc4fa376fd593e111e8106e01"
+    },
+    "core_architecture_hashes_sha256": {
+        "BROKER_METADATA_SNAPSHOT": "FILE_NOT_FOUND",
+        "PROJECT_CONTEXT_SSOT": "f738477893bd0d98fa0ad6b910c9cdd405672c3fbfa958d7efda872264b082e8",
+        "INDEPENDENT_VALIDATOR": "FILE_NOT_FOUND",
+        "TELEMETRY_ENGINE": "9ff985b379d44b920d56e47ae1a169d390e1c7e4533771c6026b53d7a3f3f733",
+        "ANALYTICS_ENGINE": "4a13e763b92a496e08c7a2edee111c41e525222746c858405f533ad738178b3c"
+    },
+    "verified_invariants": [
+        "Wilder ATR14 / Roundturn Friction >= 5.0 (Economic Filter)",
+        "Kaufman ER14 > 0.40 & Trend Direction (Regime Filter)",
+        "Wilder RSI14 60/50/40 Pullback Re-entry Timing",
+        "Initial Hard SL = 2.5 x ATR14",
+        "Pyramiding at +1.5R with SL1 moved to BE and Size = floor(2/3 V1)",
+        "Portfolio Heat <= 6.0%",
+        "Max Concurrent Positions <= 2",
+        "Strict 3.0% Base Sizing with Floor Step Quantization",
+        "DCA 71 Monthly Deposits (81,000 THB Total External Capital)",
+        "Net Trading Profit = +203,650.00 THB | Ending Equity = 284,650.00 THB"
+    ]
+}

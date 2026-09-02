@@ -166,6 +166,27 @@ class TestV27AdversarialHarness(unittest.TestCase):
         self.assertFalse(can_accept)
         self.assertIn("HEAT_CAP_EXCEEDED", reason)
 
+    def test_portfolio_attack_03_cluster_subcap_rejection(self):
+        """Portfolio Attack: USD-bloc cluster reaches 4.8% (> 4.0% cluster cap) while total heat is only 4.8% (< 6.0%)."""
+        # Active position: USDJPY with 2.8% risk (280 THB)
+        active_pos = [
+            ActivePosition("USDJPY", False, "LONG", 150.0, 150.0, 148.0, 0.06, 0.001, 2.25, 10.0) # 2000*2.25*0.06 = 270 + 10 = 280 THB (2.8%)
+        ]
+        # Candidate: GBPUSD with 2.0% risk (200 THB) -> Total USD-bloc = 4.8% > 4.0% cluster subcap
+        cand = CandidateSignal("GBPUSD", False, "LONG", 1.30, 1.29, 0.02, 0.0001, 35.0, 10.0, 0.50, 0.02) # 100*35*0.02 = 70 + 10 = 80 ? Let's make dist=250 -> 250*35*0.02 = 175 + 25 = 200 THB (2.0%)
+        cand.stop_price = 1.2750
+
+        can_accept, reason, proj_heat = PortfolioHeatEngineGate2.can_accept_order(active_pos, cand, 10000.0)
+        self.assertFalse(can_accept)
+        self.assertIn("CLUSTER_HEAT_CAP_EXCEEDED", reason)
+
+    def test_portfolio_attack_04_max_volume_ceiling_rejection(self):
+        """Portfolio Attack: Glitched sizing calculation requests 0.85 lots (> 0.50 lot safety ceiling)."""
+        cand = CandidateSignal("USDJPY", False, "LONG", 150.0, 149.5, 0.85, 0.001, 2.25, 25.0, 0.50, 0.02)
+        can_accept, reason, proj_heat = PortfolioHeatEngineGate2.can_accept_order([], cand, 10000.0)
+        self.assertFalse(can_accept)
+        self.assertIn("MAX_VOLUME_EXCEEDED", reason)
+
 
 if __name__ == "__main__":
     unittest.main()

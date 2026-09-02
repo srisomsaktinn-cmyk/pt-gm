@@ -19,6 +19,12 @@ from datetime import datetime
 from typing import Dict, Any, List, Optional, Tuple
 from dataclasses import dataclass, asdict
 
+if sys.stdout.encoding != 'utf-8':
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+    except Exception:
+        pass
+
 # ── PATH CONFIGURATION ──
 FORWARD_TRADES_CSV = "d:/Kaeha/v27_forward_trades.csv"
 RISK_ALERTS_LOG = "d:/Kaeha/v27_risk_alerts.log"

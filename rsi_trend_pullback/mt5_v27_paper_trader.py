@@ -51,6 +51,7 @@ from rsi_trend_pullback.research.v27_integrity_pipeline import (
     PositionLifecycleState,
     TradeRecord
 )
+from rsi_trend_pullback.monitoring.v27_rejected_signals_logger import V27RejectedSignalsLogger
 from rsi_trend_pullback.monitoring.v27_forward_telemetry import V27TelemetryDatabase
 from rsi_trend_pullback.monitoring.v27_reporting_engine import V27ReportingEngine
 
@@ -485,6 +486,23 @@ class MT5V27PaperTrader:
                             self.log_trade_event("BASE_OPEN", {"trade_id": t_id, "symbol": cand.symbol, "volume": cand.volume, "direction": cand.direction, "entry": cand.entry_price, "sl": cand.stop_price})
                         else:
                             logger.warning(f"🚫 Candidate {cand.symbol} REJECTED: {reason}")
+                            _, agg_heat = PortfolioHeatEngineGate2.calculate_current_heat(self.get_active_positions_for_heat(), eq)
+                            target_cluster = PortfolioHeatEngineGate2.get_cluster(cand.symbol)
+                            _, clust_heat = PortfolioHeatEngineGate2.calculate_cluster_heat(self.get_active_positions_for_heat(), target_cluster, eq)
+                            V27RejectedSignalsLogger.log_rejection(
+                                timestamp=datetime.now(),
+                                symbol=cand.symbol,
+                                direction=cand.direction,
+                                entry_price=cand.entry_price,
+                                stop_price=cand.stop_price,
+                                requested_volume=cand.volume,
+                                potential_risk_thb=cand.calculate_new_order_risk(),
+                                rejection_reason=reason,
+                                cluster=target_cluster,
+                                current_equity=eq,
+                                aggregate_heat_pct=agg_heat,
+                                cluster_heat_pct=clust_heat
+                            )
 
                 time.sleep(10)  # Heartbeat poll interval
 

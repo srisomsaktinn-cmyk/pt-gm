@@ -1,0 +1,58 @@
+{
+    "engine": "Independent Reference Validator (V2.7)",
+    "timestamp": "2026-09-02T15:17:42.924579",
+    "total_trades": 11,
+    "win_rate_pct": 18.18,
+    "profit_factor": 0.3,
+    "net_trading_pnl_thb": -16758.52,
+    "ending_equity_thb": 64241.48,
+    "total_deposited_capital_thb": 81000.0,
+    "profit_to_capital_ratio_pct": -20.69,
+    "true_twr_max_dd_pct": 56.63,
+    "max_consecutive_losses": 7,
+    "expectancy_thb": -1523.5,
+    "base_trades_count": 8,
+    "pyr_trades_count": 3,
+    "base_pnl_thb": -14052.24,
+    "pyr_pnl_thb": -2706.29,
+    "dca_events_count": 71,
+    "asset_breakdown": {
+        "XAUUSD": {
+            "trades": 7,
+            "wins": 0,
+            "pnl": -23168.53
+        },
+        "US500": {
+            "trades": 1,
+            "wins": 0,
+            "pnl": -696.83
+        },
+        "BTCUSD": {
+            "trades": 3,
+            "wins": 2,
+            "pnl": 7106.83
+        }
+    },
+    "yearly_breakdown": {
+        "2020": {
+            "trades": 4,
+            "pnl": -5048.92
+        },
+        "2022": {
+            "trades": 2,
+            "pnl": -7430.53
+        },
+        "2023": {
+            "trades": 1,
+            "pnl": -6764.41
+        },
+        "2024": {
+            "trades": 2,
+            "pnl": 7304.36
+        },
+        "2025": {
+            "trades": 2,
+            "pnl": -4819.03
+        }
+    }
+}

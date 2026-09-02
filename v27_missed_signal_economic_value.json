@@ -1,0 +1,97 @@
+{
+    "analysis": "Strategy V2.7 Missed Signal Economic Value Analysis",
+    "timestamp": "2026-09-02T15:17:57.312534",
+    "summary": {
+        "total_base_signals": 1544,
+        "online_signals": 915,
+        "offline_missed_signals": 629,
+        "signal_capture_rate_pct": 59.26,
+        "missed_signal_rate_pct": 40.74,
+        "total_historical_base_pnl_thb": -12295.35,
+        "online_captured_pnl_thb": -10392.1,
+        "offline_missed_pnl_thb": -1903.25,
+        "opportunity_pnl_capture_rate_pct": 0.0,
+        "missed_opportunity_pnl_rate_pct": 100.0,
+        "missed_profit_factor": 0.94,
+        "missed_win_rate_pct": 20.03
+    },
+    "asset_breakdown": {
+        "XAUUSD": {
+            "total": 364,
+            "online": 212,
+            "offline": 152,
+            "online_pnl": -2774.8499999999985,
+            "offline_pnl": -1857.309999999999,
+            "missed_wins": 8,
+            "missed_losses": 144
+        },
+        "BTCUSD": {
+            "total": 435,
+            "online": 265,
+            "offline": 170,
+            "online_pnl": -3479.229999999995,
+            "offline_pnl": 1913.5499999999986,
+            "missed_wins": 57,
+            "missed_losses": 113
+        },
+        "USDJPY": {
+            "total": 321,
+            "online": 192,
+            "offline": 129,
+            "online_pnl": -2880.340000000001,
+            "offline_pnl": -1610.0000000000002,
+            "missed_wins": 26,
+            "missed_losses": 103
+        },
+        "US500": {
+            "total": 297,
+            "online": 163,
+            "offline": 134,
+            "online_pnl": -1569.4299999999996,
+            "offline_pnl": -1920.49,
+            "missed_wins": 17,
+            "missed_losses": 117
+        },
+        "GBPUSD": {
+            "total": 127,
+            "online": 83,
+            "offline": 44,
+            "online_pnl": 311.75,
+            "offline_pnl": 1571.0,
+            "missed_wins": 18,
+            "missed_losses": 26
+        }
+    },
+    "time_breakdown": {
+        "17:00\u201322:00 (Evening/NY Overlap)": {
+            "signals": 454,
+            "wins": 86,
+            "losses": 368,
+            "pnl": -5557.510000000005
+        },
+        "09:00\u201316:00 (Day/London Open)": {
+            "signals": 461,
+            "wins": 87,
+            "losses": 374,
+            "pnl": -4834.59
+        },
+        "16:00\u201317:00 (Dinner Break)": {
+            "signals": 77,
+            "wins": 15,
+            "losses": 62,
+            "pnl": -3062.9
+        },
+        "22:00\u201324:00 (Late Night NY Close)": {
+            "signals": 169,
+            "wins": 29,
+            "losses": 140,
+            "pnl": 4064.7800000000016
+        },
+        "00:00\u201309:00 (Overnight/Asia)": {
+            "signals": 383,
+            "wins": 82,
+            "losses": 301,
+            "pnl": -2905.1299999999997
+        }
+    }
+}

@@ -163,7 +163,9 @@ class IndependentV27Validator:
     Complete Independent Reference Engine for Strategy V2.7.
     """
 
-    def __init__(self, broker_snapshot_path: str = "d:/Kaeha/broker_metadata_snapshot.json"):
+    def __init__(self, broker_snapshot_path: str = "d:/Kaeha/03_TRADING_RESEARCH_SYSTEM/data_telemetry/broker_metadata_snapshot.json"):
+        if not os.path.exists(broker_snapshot_path):
+            broker_snapshot_path = "d:/Kaeha/broker_metadata_snapshot.json"
         with open(broker_snapshot_path, "r", encoding="utf-8") as f:
             snap = json.load(f)
         self.meta = snap["symbols"]
